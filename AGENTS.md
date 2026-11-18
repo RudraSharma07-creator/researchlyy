@@ -32,6 +32,7 @@ use the editor.
 ## Project rules
 
 - Catalog data (fields, research projects, courses) lives in `src/lib/catalog.ts` as static data; there is no backend yet, so add new items there.
+- Each subject carries two photos — one for its research items, one for its courses — so a research card and a course card never look alike; resolve a card's photo through `itemImage(item)` in `src/lib/catalog.ts`, never a field's photo directly.
 - Cart state is a React context (`src/lib/cart.tsx`) persisted to localStorage; selection rules live as pure functions in `src/lib/cart-logic.ts` with tests beside them — change rules there, not in components.
 - Payment is a front-end simulation in `PaymentDialog`; replace with a real provider before going live.
 - Checkout collects only name and email; do not add other personal-info fields.
