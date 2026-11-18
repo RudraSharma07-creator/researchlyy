@@ -36,7 +36,7 @@ function SelectedPage() {
         <p className="mt-2 text-muted-foreground">Everything you've picked so far. Open the cart when you're ready.</p>
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_320px]">
-          <section aria-label="Selected items">
+          <section aria-label="Selected items" className="min-w-0">
             {items.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-border bg-card p-12 text-center">
                 <p className="font-display text-2xl">Nothing selected yet</p>
@@ -54,7 +54,7 @@ function SelectedPage() {
                       <button
                         type="button"
                         onClick={() => setOpen(item)}
-                        className="relative h-28 w-36 shrink-0 overflow-hidden rounded-xl sm:w-44"
+                        className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl sm:h-28 sm:w-44"
                         aria-label={`Open details for ${item.title}`}
                       >
                         <img src={field.image} alt={field.label} width={960} height={688} loading="lazy" className="size-full object-cover" />
@@ -68,19 +68,20 @@ function SelectedPage() {
                         <p className="text-xs text-muted-foreground">
                           {item.duration} · {item.mode}
                         </p>
-                        <div className="mt-auto flex items-center justify-between pt-2">
+                        <div className="mt-auto flex flex-wrap items-center justify-between gap-x-2 pt-2">
                           <span className="font-display text-xl font-semibold tabular-nums">{formatINR(item.price)}</span>
-                          <div className="flex gap-1">
-                            <Button variant="ghost" size="sm" onClick={() => setOpen(item)}>
-                              <Eye /> Details
+                          <div className="-mr-2 flex gap-1">
+                            <Button variant="ghost" size="sm" onClick={() => setOpen(item)} aria-label={`Details for ${item.title}`}>
+                              <Eye /> <span className="hidden sm:inline">Details</span>
                             </Button>
                             <Button
                               variant="ghost"
                               size="sm"
                               className="hover:bg-destructive/10 hover:text-destructive"
                               onClick={() => remove(item.id)}
+                              aria-label={`Remove ${item.title}`}
                             >
-                              <Trash2 /> Remove
+                              <Trash2 /> <span className="hidden sm:inline">Remove</span>
                             </Button>
                           </div>
                         </div>

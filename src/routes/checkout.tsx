@@ -135,7 +135,7 @@ function CheckoutPage() {
             </ul>
             <div className="flex items-baseline justify-between border-t border-border bg-paper-deep px-4 py-4">
               <span className="text-sm font-medium text-muted-foreground">
-                Total ({items.length} items)
+                Total ({items.length} {items.length === 1 ? "item" : "items"})
               </span>
               <span className="font-display text-3xl font-semibold tabular-nums">
                 {formatINR(total)}
