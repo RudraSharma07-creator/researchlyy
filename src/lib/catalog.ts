@@ -10,6 +10,18 @@ import chemistry from "@/assets/fields/chemistry.jpg";
 import mathematics from "@/assets/fields/mathematics.jpg";
 import medicine from "@/assets/fields/medicine.jpg";
 import politics from "@/assets/fields/politics.jpg";
+import astronomyClass from "@/assets/fields/astronomy-class.jpg";
+import biologyClass from "@/assets/fields/biology-class.jpg";
+import economicsClass from "@/assets/fields/economics-class.jpg";
+import roboticsClass from "@/assets/fields/robotics-class.jpg";
+import environmentClass from "@/assets/fields/environment-class.jpg";
+import psychologyClass from "@/assets/fields/psychology-class.jpg";
+import historyClass from "@/assets/fields/history-class.jpg";
+import aiClass from "@/assets/fields/ai-class.jpg";
+import chemistryClass from "@/assets/fields/chemistry-class.jpg";
+import mathematicsClass from "@/assets/fields/mathematics-class.jpg";
+import medicineClass from "@/assets/fields/medicine-class.jpg";
+import politicsClass from "@/assets/fields/politics-class.jpg";
 
 export type FieldKey =
   | "astronomy"
@@ -25,24 +37,28 @@ export type FieldKey =
   | "medicine"
   | "politics";
 
-export type Field = { key: FieldKey; label: string; image: string };
+export type Field = { key: FieldKey; label: string; researchImage: string; courseImage: string };
 
 export const FIELDS: Field[] = [
-  { key: "astronomy", label: "Astronomy", image: astronomy },
-  { key: "biology", label: "Biology", image: biology },
-  { key: "economics", label: "Economics", image: economics },
-  { key: "robotics", label: "Robotics", image: robotics },
-  { key: "environment", label: "Environmental Science", image: environment },
-  { key: "psychology", label: "Psychology", image: psychology },
-  { key: "history", label: "History", image: history },
-  { key: "ai", label: "Computer Science & AI", image: ai },
-  { key: "chemistry", label: "Chemistry", image: chemistry },
-  { key: "mathematics", label: "Mathematics", image: mathematics },
-  { key: "medicine", label: "Medicine & Neuroscience", image: medicine },
-  { key: "politics", label: "Political Science & Law", image: politics },
+  { key: "astronomy", label: "Astronomy", researchImage: astronomy, courseImage: astronomyClass },
+  { key: "biology", label: "Biology", researchImage: biology, courseImage: biologyClass },
+  { key: "economics", label: "Economics", researchImage: economics, courseImage: economicsClass },
+  { key: "robotics", label: "Robotics", researchImage: robotics, courseImage: roboticsClass },
+  { key: "environment", label: "Environmental Science", researchImage: environment, courseImage: environmentClass },
+  { key: "psychology", label: "Psychology", researchImage: psychology, courseImage: psychologyClass },
+  { key: "history", label: "History", researchImage: history, courseImage: historyClass },
+  { key: "ai", label: "Computer Science & AI", researchImage: ai, courseImage: aiClass },
+  { key: "chemistry", label: "Chemistry", researchImage: chemistry, courseImage: chemistryClass },
+  { key: "mathematics", label: "Mathematics", researchImage: mathematics, courseImage: mathematicsClass },
+  { key: "medicine", label: "Medicine & Neuroscience", researchImage: medicine, courseImage: medicineClass },
+  { key: "politics", label: "Political Science & Law", researchImage: politics, courseImage: politicsClass },
 ];
 
 export const fieldByKey = (key: FieldKey) => FIELDS.find((f) => f.key === key)!;
+
+/** Research projects and courses in the same subject show different photos. */
+export const itemImage = (item: { field: FieldKey; kind: ItemKind }) =>
+  item.kind === "research" ? fieldByKey(item.field).researchImage : fieldByKey(item.field).courseImage;
 
 export type ItemKind = "research" | "course";
 

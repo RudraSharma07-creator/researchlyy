@@ -2,13 +2,14 @@ import { Check, Clock, Eye, GraduationCap, Plus } from "lucide-react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/lib/cart";
-import { fieldByKey, formatINR, type CatalogItem } from "@/lib/catalog";
+import { fieldByKey, formatINR, itemImage, type CatalogItem } from "@/lib/catalog";
 import { cn } from "@/lib/utils";
 import { KindBadge } from "./KindBadge";
 
 export function ItemCard({ item, onOpen }: { item: CatalogItem; onOpen: (item: CatalogItem) => void }) {
   const { has, toggle } = useCart();
   const field = fieldByKey(item.field);
+  const image = itemImage(item);
   const selected = has(item.id);
   const research = item.kind === "research";
 
@@ -28,7 +29,7 @@ export function ItemCard({ item, onOpen }: { item: CatalogItem; onOpen: (item: C
             aria-label={`Open details for ${item.title}`}
           >
             <img
-              src={field.image}
+              src={image}
               alt={field.label}
               loading="lazy"
               width={960}

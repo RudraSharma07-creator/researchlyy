@@ -3,7 +3,7 @@ import { ArrowRight, ShoppingCart, Trash2 } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/lib/cart";
-import { fieldByKey, formatINR } from "@/lib/catalog";
+import { formatINR, itemImage } from "@/lib/catalog";
 import { KindBadge } from "./KindBadge";
 
 export function CartPopup() {
@@ -34,7 +34,7 @@ export function CartPopup() {
             {items.map((item) => (
               <li key={item.id} className="flex items-center gap-3 py-3">
                 <img
-                  src={fieldByKey(item.field).image}
+                  src={itemImage(item)}
                   alt=""
                   width={56}
                   height={56}

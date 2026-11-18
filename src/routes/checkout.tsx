@@ -9,7 +9,7 @@ import { CashPayButton } from "@/components/researchly/CashPayButton";
 import { KindBadge } from "@/components/researchly/KindBadge";
 import { PaymentDialog } from "@/components/researchly/PaymentDialog";
 import { useCart } from "@/lib/cart";
-import { fieldByKey, formatINR } from "@/lib/catalog";
+import { formatINR, itemImage } from "@/lib/catalog";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -117,7 +117,7 @@ function CheckoutPage() {
               {items.map((item) => (
                 <li key={item.id} className="flex items-center gap-4 p-4">
                   <img
-                    src={fieldByKey(item.field).image}
+                    src={itemImage(item)}
                     alt=""
                     width={64}
                     height={64}

@@ -2,7 +2,7 @@ import { Check, CheckCircle2, Clock, GraduationCap, MonitorPlay, Plus, Sparkles 
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/lib/cart";
-import { fieldByKey, formatINR, type CatalogItem } from "@/lib/catalog";
+import { fieldByKey, formatINR, itemImage, type CatalogItem } from "@/lib/catalog";
 import { cn } from "@/lib/utils";
 import { KindBadge } from "./KindBadge";
 
@@ -20,13 +20,14 @@ export function ItemDetailSheet({ item, onClose }: { item: CatalogItem | null; o
 
 function SheetBody({ item, selected, onToggle }: { item: CatalogItem; selected: boolean; onToggle: () => void }) {
   const field = fieldByKey(item.field);
+  const image = itemImage(item);
   const research = item.kind === "research";
   const dot = research ? "text-research" : "text-course";
 
   return (
     <>
       <div className="relative h-52 shrink-0">
-        <img src={field.image} alt={field.label} width={960} height={688} className="size-full object-cover" />
+        <img src={image} alt={field.label} width={960} height={688} className="size-full object-cover" />
         <span className="bg-scrim absolute inset-0" />
         <div className="absolute inset-x-6 bottom-4 flex items-center gap-2">
           <KindBadge kind={item.kind} />

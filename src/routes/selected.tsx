@@ -6,7 +6,7 @@ import { CartShapeButton } from "@/components/researchly/CartShapeButton";
 import { ItemDetailSheet } from "@/components/researchly/ItemDetailSheet";
 import { KindBadge } from "@/components/researchly/KindBadge";
 import { useCart } from "@/lib/cart";
-import { fieldByKey, formatINR, type CatalogItem } from "@/lib/catalog";
+import { fieldByKey, formatINR, itemImage, type CatalogItem } from "@/lib/catalog";
 
 export const Route = createFileRoute("/selected")({
   head: () => ({
@@ -57,7 +57,7 @@ function SelectedPage() {
                         className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl sm:h-28 sm:w-44"
                         aria-label={`Open details for ${item.title}`}
                       >
-                        <img src={field.image} alt={field.label} width={960} height={688} loading="lazy" className="size-full object-cover" />
+                        <img src={itemImage(item)} alt={field.label} width={960} height={688} loading="lazy" className="size-full object-cover" />
                       </button>
                       <div className="flex min-w-0 flex-1 flex-col">
                         <div className="flex items-center gap-2">
