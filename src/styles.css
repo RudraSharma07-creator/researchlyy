@@ -162,6 +162,8 @@
 
 @utility bg-scrim {
   background: var(--gradient-scrim);
+  /* A scrim is decoration: it must never swallow a tap meant for the panel's close button. */
+  pointer-events: none;
 }
 
 @utility bg-cash {
