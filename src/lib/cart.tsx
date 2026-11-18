@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type Context, type ReactNode } from "react";
 import { addToSelection, removeFromSelection, selectionTotal } from "@/lib/cart-logic";
 import { itemById, type CatalogItem } from "@/lib/catalog";
 
@@ -18,7 +18,13 @@ type CartContextValue = {
   setPopupOpen: (open: boolean) => void;
 };
 
-const CartContext = createContext<CartContextValue | null>(null);
+// One context object for the whole session. A hot reload re-runs this module (it
+// imports catalog data), and a freshly created context would no longer match the
+// provider already on screen, so useCart() would throw and blank the page.
+const hotData = import.meta.hot?.data;
+const CartContext =
+  (hotData?.["cartContext"] as Context<CartContextValue | null> | undefined) ?? createContext<CartContextValue | null>(null);
+if (hotData) hotData["cartContext"] = CartContext;
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [ids, setIds] = useState<string[]>([]);
