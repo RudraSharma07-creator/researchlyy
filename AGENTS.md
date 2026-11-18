@@ -28,3 +28,10 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+
+- Catalog data (fields, research projects, courses) lives in `src/lib/catalog.ts` as static data; there is no backend yet, so add new items there.
+- Cart state is a React context (`src/lib/cart.tsx`) persisted to localStorage; selection rules live as pure functions in `src/lib/cart-logic.ts` with tests beside them — change rules there, not in components.
+- Payment is a front-end simulation in `PaymentDialog`; replace with a real provider before going live.
+- Checkout collects only name and email; do not add other personal-info fields.
