@@ -26,7 +26,7 @@ export function AuthDialog() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState<{ name?: string; email?: string; password?: string; form?: string }>({});
+  const [errors, setErrors] = useState<{ name?: string | undefined; email?: string | undefined; password?: string | undefined; form?: string | undefined }>({});
   const [busy, setBusy] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);
 
