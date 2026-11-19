@@ -98,156 +98,172 @@ function CheckoutPage() {
     />
   );
 
+  // The payment pop-up stays mounted in one place so it keeps its "done" state when the page switches to the thank-you view.
   if (items.length === 0 || paid) {
     return (
-      <main className="bg-notebook flex min-h-[calc(100vh-4rem)] flex-col items-center gap-8 px-4 py-12">
-        <div className="w-full max-w-md rounded-3xl border border-border bg-card p-10 text-center shadow-lift">
-          <p className="font-display text-3xl">{paid ? "Thank you!" : "Your cart is empty"}</p>
-          <p className="mt-2 text-muted-foreground">
-            {paid
-              ? `We've sent your enrolment details to ${paid.email}.`
-              : "Select a research project or course to continue."}
-          </p>
-          <Button asChild variant="ink" size="xl" className="mt-6">
-            <Link to="/">{paid ? "Explore more" : "Explore programmes"}</Link>
-          </Button>
-        </div>
-        {user ? (
-          <div className="w-full max-w-3xl">
-            <OrdersPanel />
+      <>
+        <main className="bg-notebook flex min-h-[calc(100vh-4rem)] flex-col items-center gap-8 px-4 py-12">
+          <div className="w-full max-w-md rounded-3xl border border-border bg-card p-10 text-center shadow-lift">
+            <p className="font-display text-3xl">{paid ? "Thank you!" : "Your cart is empty"}</p>
+            <p className="mt-2 text-muted-foreground">
+              {paid
+                ? `We've sent your enrolment details to ${paid.email}.`
+                : "Select a research project or course to continue."}
+            </p>
+            <Button asChild variant="ink" size="xl" className="mt-6">
+              <Link to="/">{paid ? "Explore more" : "Explore programmes"}</Link>
+            </Button>
           </div>
-        ) : (
-          <p className="text-sm text-muted-foreground">
-            <button type="button" onClick={() => openAuth("login")} className="font-semibold text-foreground underline underline-offset-4">
-              Log in
-            </button>{" "}
-            to see your past orders.
-          </p>
-        )}
+          {user ? (
+            <div className="w-full max-w-3xl">
+              <OrdersPanel />
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              <button
+                type="button"
+                onClick={() => openAuth("login")}
+                className="font-semibold text-foreground underline underline-offset-4"
+              >
+                Log in
+              </button>{" "}
+              to see your past orders.
+            </p>
+          )}
+        </main>
         {paymentDialog}
-      </main>
+      </>
     );
   }
 
   return (
-    <main className="bg-notebook min-h-[calc(100vh-4rem)]">
-      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-        <Link
-          to="/selected"
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="size-4" /> Back to selection
-        </Link>
-        <h1 className="mt-3 text-4xl font-semibold sm:text-5xl">Buy</h1>
-        <p className="mt-2 text-muted-foreground">
-          Check your items, tell us your name and email, then tap the note to pay.
-        </p>
-
-        <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_380px]">
-          <section
-            aria-label="Items to buy"
-            className="self-start overflow-hidden rounded-3xl border border-border bg-card shadow-card"
+    <>
+      <main className="bg-notebook min-h-[calc(100vh-4rem)]">
+        <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+          <Link
+            to="/selected"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
           >
-            <ul className="divide-y divide-border">
-              {items.map((item) => (
-                <li key={item.id} className="flex items-center gap-4 p-4">
-                  <img
-                    src={itemImage(item)}
-                    alt=""
-                    width={64}
-                    height={64}
-                    loading="lazy"
-                    className="size-16 shrink-0 rounded-xl object-cover"
+            <ArrowLeft className="size-4" /> Back to selection
+          </Link>
+          <h1 className="mt-3 text-4xl font-semibold sm:text-5xl">Buy</h1>
+          <p className="mt-2 text-muted-foreground">
+            Check your items, tell us your name and email, then tap the note to pay.
+          </p>
+
+          <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_380px]">
+            <section
+              aria-label="Items to buy"
+              className="self-start overflow-hidden rounded-3xl border border-border bg-card shadow-card"
+            >
+              <ul className="divide-y divide-border">
+                {items.map((item) => (
+                  <li key={item.id} className="flex items-center gap-4 p-4">
+                    <img
+                      src={itemImage(item)}
+                      alt=""
+                      width={64}
+                      height={64}
+                      loading="lazy"
+                      className="size-16 shrink-0 rounded-xl object-cover"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <KindBadge kind={item.kind} />
+                      <p className="mt-1 truncate font-semibold">{item.title}</p>
+                      <p className="text-xs text-muted-foreground">{item.duration}</p>
+                    </div>
+                    <span className="font-semibold tabular-nums">{formatINR(item.price)}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="flex items-baseline justify-between border-t border-border bg-paper-deep px-4 py-4">
+                <span className="text-sm font-medium text-muted-foreground">
+                  Total ({items.length} {items.length === 1 ? "item" : "items"})
+                </span>
+                <span className="font-display text-3xl font-semibold tabular-nums">
+                  {formatINR(total)}
+                </span>
+              </div>
+            </section>
+
+            <form
+              onSubmit={handlePay}
+              noValidate
+              className="flex flex-col rounded-3xl border border-border bg-card p-6 shadow-lift lg:sticky lg:top-24 lg:self-start"
+            >
+              <h2 className="text-2xl font-semibold">Your details</h2>
+              {!user && (
+                <div className="mt-3 flex items-start gap-3 rounded-xl border border-research/40 bg-research/10 p-3 text-sm">
+                  <LogIn className="mt-0.5 size-4 shrink-0" />
+                  <p>
+                    You'll need an account to place your order.{" "}
+                    <button
+                      type="button"
+                      onClick={() => openAuth("login")}
+                      className="font-semibold underline underline-offset-4"
+                    >
+                      Log in
+                    </button>{" "}
+                    or{" "}
+                    <button
+                      type="button"
+                      onClick={() => openAuth("signup")}
+                      className="font-semibold underline underline-offset-4"
+                    >
+                      sign up
+                    </button>
+                    .
+                  </p>
+                </div>
+              )}
+              <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Lock className="size-3.5" /> We only need your name and email.
+              </p>
+              <div className="mt-5 space-y-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="name">Full name</Label>
+                  <Input
+                    id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Ananya Sharma"
+                    autoComplete="name"
+                    aria-invalid={Boolean(errors.name)}
+                    className="h-11"
                   />
-                  <div className="min-w-0 flex-1">
-                    <KindBadge kind={item.kind} />
-                    <p className="mt-1 truncate font-semibold">{item.title}</p>
-                    <p className="text-xs text-muted-foreground">{item.duration}</p>
-                  </div>
-                  <span className="font-semibold tabular-nums">{formatINR(item.price)}</span>
-                </li>
-              ))}
-            </ul>
-            <div className="flex items-baseline justify-between border-t border-border bg-paper-deep px-4 py-4">
-              <span className="text-sm font-medium text-muted-foreground">
-                Total ({items.length} {items.length === 1 ? "item" : "items"})
-              </span>
-              <span className="font-display text-3xl font-semibold tabular-nums">
-                {formatINR(total)}
-              </span>
-            </div>
-          </section>
-
-          <form
-            onSubmit={handlePay}
-            noValidate
-            className="flex flex-col rounded-3xl border border-border bg-card p-6 shadow-lift lg:sticky lg:top-24 lg:self-start"
-          >
-            <h2 className="text-2xl font-semibold">Your details</h2>
-            {!user && (
-              <div className="mt-3 flex items-start gap-3 rounded-xl border border-research/40 bg-research/10 p-3 text-sm">
-                <LogIn className="mt-0.5 size-4 shrink-0" />
-                <p>
-                  You'll need an account to place your order.{" "}
-                  <button type="button" onClick={() => openAuth("login")} className="font-semibold underline underline-offset-4">
-                    Log in
-                  </button>{" "}
-                  or{" "}
-                  <button type="button" onClick={() => openAuth("signup")} className="font-semibold underline underline-offset-4">
-                    sign up
-                  </button>
-                  .
-                </p>
+                  {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="ananya@example.com"
+                    autoComplete="email"
+                    readOnly={Boolean(user)}
+                    aria-invalid={Boolean(errors.email)}
+                    className="h-11 read-only:bg-muted read-only:text-muted-foreground"
+                  />
+                  {user && <p className="text-xs text-muted-foreground">Your account email.</p>}
+                  {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+                </div>
               </div>
-            )}
-            <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Lock className="size-3.5" /> We only need your name and email.
-            </p>
-            <div className="mt-5 space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="name">Full name</Label>
-                <Input
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Ananya Sharma"
-                  autoComplete="name"
-                  aria-invalid={Boolean(errors.name)}
-                  className="h-11"
-                />
-                {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
+              <div className="mt-8 flex justify-center">
+                <CashPayButton onClick={() => undefined} amountLabel={formatINR(total)} />
               </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="ananya@example.com"
-                  autoComplete="email"
-                  readOnly={Boolean(user)}
-                  aria-invalid={Boolean(errors.email)}
-                  className="h-11 read-only:bg-muted read-only:text-muted-foreground"
-                />
-                {user && <p className="text-xs text-muted-foreground">Your account email.</p>}
-                {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
-              </div>
-            </div>
-            <div className="mt-8 flex justify-center">
-              <CashPayButton onClick={() => undefined} amountLabel={formatINR(total)} />
-            </div>
-          </form>
-        </div>
-
-        {user && (
-          <div className="mt-10">
-            <OrdersPanel />
+            </form>
           </div>
-        )}
-      </div>
 
+          {user && (
+            <div className="mt-10">
+              <OrdersPanel />
+            </div>
+          )}
+        </div>
+      </main>
       {paymentDialog}
-    </main>
+    </>
   );
 }
