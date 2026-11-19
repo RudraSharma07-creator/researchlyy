@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Building2, CreditCard, Loader2, Smartphone, Wallet, PartyPopper } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 const METHODS = [
@@ -17,7 +18,7 @@ type Props = {
   amountLabel: string;
   name: string;
   email: string;
-  onPaid: () => void;
+  onPaid: () => Promise<void>;
 };
 
 export function PaymentDialog({ open, onOpenChange, amountLabel, name, email, onPaid }: Props) {
@@ -28,12 +29,16 @@ export function PaymentDialog({ open, onOpenChange, amountLabel, name, email, on
     if (open) setStage("choose");
   }, [open]);
 
-  const pay = () => {
+  const pay = async () => {
     setStage("processing");
-    window.setTimeout(() => {
+    await new Promise((r) => window.setTimeout(r, 1200));
+    try {
+      await onPaid();
       setStage("done");
-      onPaid();
-    }, 1600);
+    } catch (e) {
+      setStage("choose");
+      toast.error(e instanceof Error ? e.message : "Could not save your order. Please try again.");
+    }
   };
 
   return (

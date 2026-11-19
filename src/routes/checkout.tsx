@@ -1,13 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
-import { ArrowLeft, Lock } from "lucide-react";
+import { ArrowLeft, LogIn, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CashPayButton } from "@/components/researchly/CashPayButton";
 import { KindBadge } from "@/components/researchly/KindBadge";
+import { OrdersPanel } from "@/components/researchly/OrdersPanel";
 import { PaymentDialog } from "@/components/researchly/PaymentDialog";
+import { useAuth } from "@/lib/auth";
+import { placeOrder } from "@/lib/orders.functions";
 import { useCart } from "@/lib/cart";
 import { formatINR, itemImage } from "@/lib/catalog";
 
@@ -38,7 +44,10 @@ const buyerSchema = z.object({
 });
 
 function CheckoutPage() {
-  const { items, total, clear } = useCart();
+  const { ids, items, total, clear } = useCart();
+  const { user, displayName, openAuth } = useAuth();
+  const queryClient = useQueryClient();
+  const placeOrderFn = useServerFn(placeOrder);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [errors, setErrors] = useState<{ name?: string | undefined; email?: string | undefined }>(
@@ -49,8 +58,20 @@ function CheckoutPage() {
 
   const amountLabel = formatINR(total);
 
+  // Signed in: the account's email is used, and the name is filled in from the account.
+  useEffect(() => {
+    if (!user) return;
+    setEmail(user.email ?? "");
+    setName((n) => n || (displayName !== user.email ? displayName : ""));
+  }, [user, displayName]);
+
   const handlePay = (e?: React.FormEvent) => {
     e?.preventDefault();
+    if (!user) {
+      toast("Please log in or create an account to place your order.");
+      openAuth("login");
+      return;
+    }
     const result = buyerSchema.safeParse({ name, email });
     if (!result.success) {
       const f = result.error.flatten().fieldErrors;
@@ -68,17 +89,19 @@ function CheckoutPage() {
       amountLabel={paid?.amount ?? amountLabel}
       name={name}
       email={email}
-      onPaid={() => {
-        setPaid({ amount: formatINR(total), name, email });
+      onPaid={async () => {
+        const order = await placeOrderFn({ data: { ids } });
+        setPaid({ amount: formatINR(order.total), name, email });
         clear();
+        await queryClient.invalidateQueries({ queryKey: ["orders"] });
       }}
     />
   );
 
   if (items.length === 0 || paid) {
     return (
-      <main className="bg-notebook grid min-h-[calc(100vh-4rem)] place-items-center px-4">
-        <div className="max-w-md rounded-3xl border border-border bg-card p-10 text-center shadow-lift">
+      <main className="bg-notebook flex min-h-[calc(100vh-4rem)] flex-col items-center gap-8 px-4 py-12">
+        <div className="w-full max-w-md rounded-3xl border border-border bg-card p-10 text-center shadow-lift">
           <p className="font-display text-3xl">{paid ? "Thank you!" : "Your cart is empty"}</p>
           <p className="mt-2 text-muted-foreground">
             {paid
@@ -89,6 +112,18 @@ function CheckoutPage() {
             <Link to="/">{paid ? "Explore more" : "Explore programmes"}</Link>
           </Button>
         </div>
+        {user ? (
+          <div className="w-full max-w-3xl">
+            <OrdersPanel />
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            <button type="button" onClick={() => openAuth("login")} className="font-semibold text-foreground underline underline-offset-4">
+              Log in
+            </button>{" "}
+            to see your past orders.
+          </p>
+        )}
         {paymentDialog}
       </main>
     );
@@ -149,6 +184,22 @@ function CheckoutPage() {
             className="flex flex-col rounded-3xl border border-border bg-card p-6 shadow-lift lg:sticky lg:top-24 lg:self-start"
           >
             <h2 className="text-2xl font-semibold">Your details</h2>
+            {!user && (
+              <div className="mt-3 flex items-start gap-3 rounded-xl border border-research/40 bg-research/10 p-3 text-sm">
+                <LogIn className="mt-0.5 size-4 shrink-0" />
+                <p>
+                  You'll need an account to place your order.{" "}
+                  <button type="button" onClick={() => openAuth("login")} className="font-semibold underline underline-offset-4">
+                    Log in
+                  </button>{" "}
+                  or{" "}
+                  <button type="button" onClick={() => openAuth("signup")} className="font-semibold underline underline-offset-4">
+                    sign up
+                  </button>
+                  .
+                </p>
+              </div>
+            )}
             <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
               <Lock className="size-3.5" /> We only need your name and email.
             </p>
@@ -175,9 +226,11 @@ function CheckoutPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="ananya@example.com"
                   autoComplete="email"
+                  readOnly={Boolean(user)}
                   aria-invalid={Boolean(errors.email)}
-                  className="h-11"
+                  className="h-11 read-only:bg-muted read-only:text-muted-foreground"
                 />
+                {user && <p className="text-xs text-muted-foreground">Your account email.</p>}
                 {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
               </div>
             </div>
@@ -186,6 +239,12 @@ function CheckoutPage() {
             </div>
           </form>
         </div>
+
+        {user && (
+          <div className="mt-10">
+            <OrdersPanel />
+          </div>
+        )}
       </div>
 
       {paymentDialog}

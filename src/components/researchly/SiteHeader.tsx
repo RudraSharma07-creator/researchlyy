@@ -1,5 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { ShoppingCart, Telescope } from "lucide-react";
+import { LogIn, LogOut, ShoppingCart, Telescope } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/auth";
 import { useCart } from "@/lib/cart";
 import { cn } from "@/lib/utils";
 
@@ -11,6 +14,7 @@ const NAV = [
 
 export function SiteHeader() {
   const { count, setPopupOpen } = useCart();
+  const { user, ready, displayName, openAuth, signOut } = useAuth();
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/85 backdrop-blur-md">
@@ -37,6 +41,33 @@ export function SiteHeader() {
           ))}
         </nav>
 
+        <div className="flex items-center gap-2">
+          {!ready ? (
+            <span className="h-9 w-20" aria-hidden />
+          ) : user ? (
+            <>
+              <span
+                title={user.email ?? ""}
+                className="hidden max-w-40 truncate text-sm font-medium text-muted-foreground lg:inline"
+              >
+                Hi, {displayName.split(" ")[0]}
+              </span>
+              <Button
+                variant="outline"
+                size="pill"
+                onClick={async () => {
+                  await signOut();
+                  toast.success("You've signed out.");
+                }}
+              >
+                <LogOut /> Sign out
+              </Button>
+            </>
+          ) : (
+            <Button variant="ink" size="pill" onClick={() => openAuth("login")}>
+              <LogIn /> Log in
+            </Button>
+          )}
         <button
           type="button"
           onClick={() => setPopupOpen(true)}
@@ -55,6 +86,7 @@ export function SiteHeader() {
             </span>
           )}
         </button>
+        </div>
       </div>
       <nav className="flex justify-center gap-1 border-t border-border/60 px-2 py-1.5 md:hidden">
         {NAV.map((n) => (

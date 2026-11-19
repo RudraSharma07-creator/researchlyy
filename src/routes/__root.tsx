@@ -13,6 +13,8 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CartProvider } from "@/lib/cart";
+import { AuthProvider } from "@/lib/auth";
+import { AuthDialog } from "@/components/researchly/AuthDialog";
 import { SiteHeader } from "@/components/researchly/SiteHeader";
 import { CartPopup } from "@/components/researchly/CartPopup";
 import { Toaster } from "@/components/ui/sonner";
@@ -131,13 +133,16 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <CartProvider>
-        <SiteHeader />
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
-        <CartPopup />
-        <Toaster position="bottom-center" />
-      </CartProvider>
+      <AuthProvider>
+        <CartProvider>
+          <SiteHeader />
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <Outlet />
+          <CartPopup />
+          <AuthDialog />
+          <Toaster position="bottom-center" />
+        </CartProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
