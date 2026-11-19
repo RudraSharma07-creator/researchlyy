@@ -4,6 +4,7 @@ import { BookOpen, FlaskConical, Search, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ItemCard } from "@/components/researchly/ItemCard";
 import { ItemDetailSheet } from "@/components/researchly/ItemDetailSheet";
+import { AssistantButton } from "@/components/researchly/AssistantDialog";
 import { CATALOG, FIELDS, fieldByKey, type CatalogItem, type FieldKey, type ItemKind } from "@/lib/catalog";
 import { cn } from "@/lib/utils";
 
@@ -95,6 +96,7 @@ function Home() {
       </div>
 
       <ItemDetailSheet item={open} onClose={() => setOpen(null)} />
+      <AssistantButton />
     </main>
   );
 }
