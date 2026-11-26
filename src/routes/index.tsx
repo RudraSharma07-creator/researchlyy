@@ -55,7 +55,8 @@ function Home() {
             <Sparkles className="size-3.5 text-research" /> {CATALOG.length} programmes · {FIELDS.length} fields
           </p>
           <h1 className="mt-5 max-w-3xl text-4xl font-semibold leading-[1.05] sm:text-6xl">
-            Real research. Real courses. <span className="italic text-research">Built for Indian students.</span>
+            Real research. Real courses.{" "}
+            <span className="italic text-research">Built by an Indian, built for Indian students.</span>
           </h1>
           <p className="mt-4 max-w-xl text-base text-ink-foreground/75 sm:text-lg">
             Hover over any card for a quick look, tap the photo for full details, and select as many as you like.
